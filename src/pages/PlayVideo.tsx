@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { FaCopy, FaDownload, FaStar, FaStarHalfAlt, FaRegStar, FaEye, FaSpinner } from 'react-icons/fa';
+import { FaCopy, FaDownload, FaStar, FaStarHalfAlt, FaRegStar, FaEye, FaSpinner, FaShareAlt } from 'react-icons/fa';
 
 const fakeStatsData = [
   { views: '2.1M', rating: 4.8 },
@@ -34,11 +34,10 @@ export function PlayVideo() {
   const [loading, setLoading] = useState<boolean>(true);
   const [fakeStats, setFakeStats] = useState<{ views: string; rating: number } | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const randomUrls = [
-    'https://otieu.com/4/10209209',
-    'https://viiukuhe.com/dc/?blockID=406304',
-    'https://jovial-fortune.com/cY2po8'
+    'https://agungwandev.com',
   ];
 
   useEffect(() => {
@@ -66,7 +65,6 @@ export function PlayVideo() {
           setVideoTitle('Video not found');
         }
       } catch (error) {
-        console.error('Error fetching video data:', error);
         setVideoTitle('Failed to load video');
       } finally {
         setLoading(false);
@@ -90,6 +88,7 @@ export function PlayVideo() {
           allowDownload: false,
           playButtonShowing: true,
           fillToContainer: true,
+          primaryColor: '#0f172a',
         }
       });
     }
@@ -98,7 +97,8 @@ export function PlayVideo() {
   const handleCopy = () => {
     const linkToCopy = `https://${window.location.hostname}/v/?v=${id}`;
     navigator.clipboard.writeText(linkToCopy);
-    alert('Verification link copied to clipboard!');
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleDownloadClick = () => {
@@ -120,11 +120,11 @@ export function PlayVideo() {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       if (i <= rating) {
-        stars.push(<FaStar key={i} className="text-yellow-400" />);
+        stars.push(<FaStar key={i} className="text-yellow-400 text-sm" />);
       } else if (i - 0.5 <= rating) {
-        stars.push(<FaStarHalfAlt key={i} className="text-yellow-400" />);
+        stars.push(<FaStarHalfAlt key={i} className="text-yellow-400 text-sm" />);
       } else {
-        stars.push(<FaRegStar key={i} className="text-gray-300" />);
+        stars.push(<FaRegStar key={i} className="text-slate-200 text-sm" />);
       }
     }
     return stars;
@@ -132,83 +132,103 @@ export function PlayVideo() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <FaSpinner className="animate-spin text-4xl text-blue-500" />
+      <div className="flex flex-col justify-center items-center h-screen bg-white">
+        <div className="w-12 h-12 border-4 border-slate-100 border-t-slate-900 rounded-full animate-spin mb-4"></div>
+        <span className="text-slate-500 font-medium animate-pulse">Loading content...</span>
       </div>
     );
   }
   
   if (!videoUrl) {
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-100">
-        <div className="text-center">
-            <h1 className="text-2xl font-bold text-red-600 mb-2">Video Not Found</h1>
-            <p className="text-gray-600">The requested video could not be found.</p>
+      <div className="flex justify-center items-center h-screen bg-gray-50 px-4">
+        <div className="text-center max-w-md w-full bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+               <FaEye className="text-2xl text-red-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Video Unavailable</h1>
+            <p className="text-slate-500">The video you are looking for does not exist or has been removed.</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-50 py-6 sm:py-10">
-      <div className="container mx-auto max-w-4xl px-4">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2 text-center break-words">
-          {videoTitle}
-        </h1>
-
-        {fakeStats && (
-          <div className="flex items-center justify-center gap-x-6 mb-4 text-gray-600">
-            <div className="flex items-center gap-x-2">
-              <FaEye />
-              <span>{fakeStats.views} Views</span>
-            </div>
-            <div className="flex items-center gap-x-2">
-              <div className="flex items-center">{renderStars(fakeStats.rating)}</div>
-              <span className="font-semibold">{fakeStats.rating}</span>
-            </div>
-          </div>
-        )}
-
-        <div className="w-full aspect-video bg-black rounded-lg shadow-xl overflow-hidden mb-5">
-          <video id="video-player" className="w-full h-full" controls>
+    <div className="min-h-screen bg-white text-slate-900 font-sans">
+      <div className="container mx-auto max-w-5xl px-4 py-8 md:py-12">
+        <div className="w-full aspect-video bg-black rounded-2xl shadow-2xl shadow-slate-200 overflow-hidden mb-8 ring-1 ring-black/5">
+          <video id="video-player" className="w-full h-full object-cover">
             <source src={videoUrl} type="video/mp4" />
-            Your browser does not support the video tag.
           </video>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex rounded-lg border border-gray-300 overflow-hidden shadow-sm">
-            <input
-              type="text"
-              value={`https://${window.location.hostname}/v/?v=${id}`}
-              readOnly
-              className="w-full p-3 bg-white text-gray-600 outline-none truncate"
-            />
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div className="flex-1 space-y-2">
+              <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-tight">
+                {videoTitle}
+              </h1>
+              
+              {fakeStats && (
+                <div className="flex items-center gap-6 text-sm font-medium text-slate-500">
+                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                    <FaEye className="text-slate-400" />
+                    <span>{fakeStats.views} views</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                    <div className="flex">{renderStars(fakeStats.rating)}</div>
+                    <span className="text-slate-700">{fakeStats.rating}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            
             <button
-              onClick={handleCopy}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 p-4 transition-colors"
+              onClick={handleDownloadClick}
+              disabled={!videoUrl || isDownloading}
+              className="group flex items-center justify-center gap-3 bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg shadow-slate-900/20 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed whitespace-nowrap"
             >
-              <FaCopy />
+              {isDownloading ? (
+                <>
+                  <FaSpinner className="animate-spin text-lg" />
+                  <span>Processing...</span>
+                </>
+              ) : (
+                <>
+                  <FaDownload className="text-lg group-hover:-translate-y-0.5 transition-transform" />
+                  <span>Download Video</span>
+                </>
+              )}
             </button>
           </div>
 
-          <button
-            onClick={handleDownloadClick}
-            disabled={!videoUrl || isDownloading}
-            className="w-full bg-green-500 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-white py-3 px-4 rounded-lg flex items-center justify-center font-semibold shadow-md text-lg"
-          >
-            {isDownloading ? (
-              <>
-                <FaSpinner className="animate-spin mr-3" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <FaDownload className="mr-3" />
-                Download Video
-              </>
-            )}
-          </button>
+          <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+            <div className="flex items-center gap-3 mb-3 text-slate-900 font-bold text-sm uppercase tracking-wide">
+                <FaShareAlt className="text-slate-400" />
+                <span>Share Verification Link</span>
+            </div>
+            <div className="relative group">
+                <input
+                  type="text"
+                  value={`https://${window.location.hostname}/v/?v=${id}`}
+                  readOnly
+                  className="w-full bg-white border border-slate-200 text-slate-600 text-sm font-medium rounded-xl py-4 pl-4 pr-16 focus:outline-none focus:ring-2 focus:ring-slate-900/10 focus:border-slate-300 transition-all"
+                />
+                <button
+                  onClick={handleCopy}
+                  className="absolute right-2 top-2 bottom-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 rounded-lg font-semibold text-xs transition-colors flex items-center gap-2"
+                >
+                  {copied ? (
+                    <span className="text-green-600">Copied!</span>
+                  ) : (
+                    <>
+                        <FaCopy />
+                        <span>Copy</span>
+                    </>
+                  )}
+                </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

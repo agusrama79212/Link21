@@ -1,21 +1,17 @@
-import { FaDownload } from 'react-icons/fa';
+import { FaCloudDownloadAlt, FaFileVideo, FaExclamationCircle, FaArrowRight } from 'react-icons/fa';
 
 export function Download() {
   const videoUrl = sessionStorage.getItem('videoUrl');
   const videoTitle = sessionStorage.getItem('videoTitle');
 
   const randomUrls = [
-    'https://otieu.com/4/10209209',
-    'https://viiukuhe.com/dc/?blockID=406304',
-    'https://jovial-fortune.com/cY2po8'
+    'https://agungwandev.com',
   ];
   
   const handleDownload = () => {
     if (videoUrl) {
-      // Buka URL video di tab baru
       window.open(videoUrl, '_blank');
 
-      // Redirect tab saat ini ke URL acak setelah 2 detik
       setTimeout(() => {
         const randomUrl = randomUrls[Math.floor(Math.random() * randomUrls.length)];
         window.location.href = randomUrl;
@@ -24,38 +20,61 @@ export function Download() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-full bg-gray-50 p-4 py-10">
-      <div className="w-full max-w-md text-center bg-white rounded-xl shadow-xl p-8 sm:p-10">
-        <FaDownload className="text-5xl text-green-500 mx-auto mb-5" />
-        
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
-          Download Video
-        </h1>
-        
-        {videoTitle && (
-          <p className="text-md text-gray-500 mb-6 truncate" title={videoTitle}>
-            {videoTitle}
-          </p>
-        )}
+    <div className="flex items-center justify-center min-h-screen bg-gray-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl shadow-slate-200 border border-white p-8 sm:p-10 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900"></div>
 
-        {videoUrl ? (
-          <>
-            <p className="text-gray-600 mb-8">
-              Click the button below to start. The video will open in a new tab for you to save.
-            </p>
-            <button
-              onClick={handleDownload}
-              className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-lg transition-transform transform hover:scale-105 shadow-lg shadow-green-500/30 focus:outline-none focus:ring-4 focus:ring-green-300"
-            >
-              Start Download
-            </button>
-          </>
-        ) : (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 text-left" role="alert">
-            <p className="font-bold">Error</p>
-            <p>No video URL available. Please return to the player and try again.</p>
+        <div className="flex flex-col items-center text-center">
+          <div className="w-20 h-20 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 shadow-inner">
+            <FaCloudDownloadAlt className="text-4xl text-slate-900" />
           </div>
-        )}
+          
+          <h1 className="text-2xl font-extrabold text-slate-900 mb-2 tracking-tight">
+            Ready to Download
+          </h1>
+          
+          <p className="text-slate-500 mb-8 text-sm font-medium">
+            Your content is prepared and ready for secure transfer.
+          </p>
+
+          {videoUrl ? (
+            <div className="w-full space-y-6">
+              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex items-center gap-4 text-left group hover:border-slate-300 transition-colors">
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm text-slate-900">
+                    <FaFileVideo size={20} />
+                </div>
+                <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-900 truncate">
+                        {videoTitle || 'Untitled Video'}
+                    </p>
+                    <p className="text-xs text-slate-500">MP4 Format • High Quality</p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleDownload}
+                className="w-full group relative flex items-center justify-center gap-3 bg-slate-900 text-white font-bold py-4 px-6 rounded-xl hover:bg-slate-800 transition-all duration-300 shadow-lg shadow-slate-900/20 active:scale-95"
+              >
+                <span>Start Download</span>
+                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </button>
+              
+              <p className="text-xs text-slate-400">
+                The download will start in a new window automatically.
+              </p>
+            </div>
+          ) : (
+            <div className="w-full bg-red-50 border border-red-100 rounded-xl p-6 flex flex-col items-center gap-3">
+              <FaExclamationCircle className="text-3xl text-red-500" />
+              <div>
+                <h3 className="text-red-900 font-bold">Download Unavailable</h3>
+                <p className="text-red-600 text-sm mt-1">
+                    Session expired or invalid URL. Please return to player.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export const VerifLink: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const adUrls = [
-    'https://otieu.com/4/10069080',
+    'https://otieu.com/4/10423056',
   ];
 
   useEffect(() => {
